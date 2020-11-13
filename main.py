@@ -83,8 +83,8 @@ def main():
 		recourse_points[n_id]['path'] = recourse_path
 
 	# print(recourse_points)
-	pk.dump(clf, open("./tmp/LR_classifier_face", 'wb'))
-	pk.dump(recourse_points, open("./tmp/Face_recourse_points", 'wb'))
+	pk.dump(clf, open("./tmp/LR_classifier_face.pk", 'wb'))
+	pk.dump(recourse_points, open("./tmp/Face_recourse_points.pk", 'wb'))
 	return recourse_points
 
 def unit_test():
