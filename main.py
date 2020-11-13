@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import pickle as pk
 from sklearn.linear_model import LogisticRegression
+from matplotlib import pyplot as plt
 
 import utils
 import distribution
@@ -30,6 +31,34 @@ class distance_obj:
 	def computeDistance(self, xi, xj):
 		dist = np.linalg.norm(xi - xj, 2)
 		return dist
+
+def plot_recourse(data, face_recourse, plot_idx=0):
+	all_pos = data[data.y == 1]
+	all_pos_x1 = all_pos.x1.values
+	all_pos_x2 = all_pos.x2.values
+
+	all_neg = data[data.y == 0]
+	all_neg_x1 = all_neg.x1.values
+	all_neg_x2 = all_neg.x2.values
+
+	plt.plot(all_pos_x1, all_pos_x2, '*')
+	plt.plot(all_neg_x1, all_neg_x2, '*')
+	plt.xlabel('x1')
+	plt.ylabel('x2')
+	plt.title('FACE Synthetic data set')
+
+	assert(plot_idx < len(data))
+
+	plot_pt = face_recourse[plot_idx]['factual_instance']
+	plot_cfpt = face_recourse[plot_idx]['counterfactual_target']
+	points_x1 = []
+	points_x2 = []
+	points_x1 = [data.iloc[x]['x1'] for x in face_recourse[plot_idx]['path']]
+	points_x2 = [data.iloc[x]['x2'] for x in face_recourse[plot_idx]['path']]
+	plt.plot(points_x1, points_x2, color='green')
+	plt.plot(plot_pt['x1'], plot_pt['x2'], 'o',color='red')
+	plt.plot(plot_cfpt['x1'], plot_cfpt['x2'], 'o', color='red')
+	plt.savefig('./tmp/recourse_path_{}.jpg'.format(plot_idx))
 
 def main():
 	# dataPath = "./data/synthetic_one_hot"
@@ -85,6 +114,9 @@ def main():
 	# print(recourse_points)
 	pk.dump(clf, open("./tmp/LR_classifier_face.pk", 'wb'))
 	pk.dump(recourse_points, open("./tmp/Face_recourse_points.pk", 'wb'))
+
+	### Plot recourse for 10th data point
+	plot_recourse(data, recourse_points, 10)
 	return recourse_points
 
 def unit_test():
@@ -101,6 +133,6 @@ def unit_test():
 	face.unit_test_djikstra()
 
 if __name__=="__main__":
-	# main()
-	unit_test()
+	main()
+	# unit_test()
 
