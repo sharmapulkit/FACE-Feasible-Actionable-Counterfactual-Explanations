@@ -7,9 +7,9 @@ import pickle as pk
 def main():
 	recourse_dict_path = './tmp/Face_recourse_points.pk'
 	clf_path = './tmp/LR_classifier_face.pk'
-	FEATURE_SET = ['x1', 'x2']
 
 	recourse_dict = pk.load(open(recourse_dict_path, 'rb'))
+	FEATURE_SET = recourse_dict.columns
 	clf = pk.load(open(clf_path, 'rb'))
 
 	negatives = 0

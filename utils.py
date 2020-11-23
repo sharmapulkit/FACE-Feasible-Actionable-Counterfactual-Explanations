@@ -79,18 +79,21 @@ def density_function(xi, X):
 	return 1/len(X)
 
 def getFeasibilityConstraints(FEATURE_COLUMNS, dataset_name):
+	## Initialize feasibility constraints
+	feasibility_consts = Feasibility.feasibility_consts(FEATURE_COLUMNS)
 	if (dataset_name == 'synthetic_lin'):
-		## Initialize feasibility constraints
-		feasibility_consts = Feasibility.feasibility_consts(FEATURE_COLUMNS)
-
 		feasibility_consts.feasibility_set['x1'].mutability = False
 		feasibility_consts.feasibility_set['x2'].step_direction = 1
-
-		return feasibility_consts
+	if (dataset_name == 'german_credit'):
+		feasibility_consts.feasibility_set['No of dependents'].mutability = False
+		feasibility_consts.feasibility_set['Sex & Marital Status'].mutability = False
+		feasibility_consts.feasibility_set['Age (years)'].step_direction = 1
+		feasibility_consts.feasibility_set['Duration in Current address'].step_direction = 1
+		feasibility_consts.feasibility_set['Length of current employment'].step_direction = 1
 	else:
 		print("Unknown dataset. Initializing with no constraints")
 		feasibility_consts = Feasibility.feasibility_consts(FEATURE_COLUMNS)
 
-		return feasibility_consts
+	return feasibility_consts
 
 

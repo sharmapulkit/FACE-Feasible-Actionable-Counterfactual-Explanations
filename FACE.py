@@ -107,6 +107,7 @@ class FACE:
 		"""
 		Make the graph using given data points
 		"""
+		print("Constructing graph...")
 		X = self._data[self.FEATURE_COLUMNS]
 		# self._Graph = utils.make_graph(X, self._density, self._distance, self._kernel_obj, feasibilitySet, epsilon) ## Adjacency matrix representation of graph
 		self._Graph = utils.make_graph_adjList(X, self._density, self._distance, self._kernel_obj, feasibilitySet, epsilon) ## Adjacency matrix representation of graph
