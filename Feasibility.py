@@ -33,21 +33,27 @@ class feasibility_consts:
 	def __init__(self, FEATURE_COLUMNS):
 		self._FEATURE_COLUMNS = FEATURE_COLUMNS
 		self._feasibility_set = {}
-		for feat in FEATURE_COLUMNS:
-			self._feasibility_set[feat] = constraintProps()
-		return
+		# for feat in FEATURE_COLUMNS:
+		# 	self._feasibility_set[feat] = constraintProps()
 
 	@property
 	def feasibility_set(self):
 		return self._feasibility_set
 
+	def set_constraint(self, feat, mutability=True, step_direction=0):
+		self._feasibility_set[feat] = constraintProps(mutability, step_direction)
+
 	def check_constraints(self, source, dest):
+		if (len(self._feasibility_set) == 0):
+			return True
+
 		delta = dest - source
 		for feat in self._FEATURE_COLUMNS:
-			if ((delta[feat] != 0) and (self._feasibility_set[feat]._mutable is False)):
-				return False
-			if (delta[feat]*self._feasibility_set[feat]._step_direction < 0):
-				return False
+			if feat in self._feasibility_set:
+				if ((delta[feat] != 0) and (self._feasibility_set[feat]._mutable is False)):
+					return False
+				if (delta[feat]*self._feasibility_set[feat]._step_direction < 0):
+					return False
 
 		return	True
 

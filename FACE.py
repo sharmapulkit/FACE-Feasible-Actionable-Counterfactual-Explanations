@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle as pk
 
 import utils
 
@@ -34,40 +35,6 @@ class FACE:
 		self._clf.fit(X, y)
 		print("Trained classifier")
 
-
-	# def shortestPath(self, source, target):
-	# 	"""
-	# 	Djikstra to find the shortest path in Graph
-	# 	Returns shortest_path, path_cost
-	# 	"""
-	# 	path = [source]
-	# 	path_cost = 0
-	# 	current = source
-	# 	## while current is not target
-	# 	while (current is not target):
-	# 		## update distances of all neighbors
-	# 		distances = {}
-	# 		for elem_id, elem in enumerate(self._Graph[current]):
-	# 			if (elem > 0):
-	# 				distances[elem_id] = elem
-
-	# 		minimum_cost = float('inf')
-	# 		closest = -1
-	# 		## Pick the closest neighbor
-	# 		for key in distances:
-	# 			if (distances[key] < minimum_cost):
-	# 				minimum_cost = distances[key]
-	# 				closest = key
-
-	# 		if (closest == -1):
-	# 			return []
-
-	# 		path.append(closest)
-	# 		path_cost += minimum_cost
-	# 		current = closest
-
-	# 	return path, path_cost
-
 	def shortestPath(self, source, target):
 		"""
 		Djikstra to find the shortest path in Graph
@@ -83,6 +50,9 @@ class FACE:
 		while (current is not target):
 			## update distances of all neighbors
 			visited.append(current)
+			if not (current in self._Graph):
+				return [], -1
+
 			distances = self._Graph[current]
 			minimum_cost = float('inf')
 			closest = -1
@@ -111,6 +81,7 @@ class FACE:
 		X = self._data[self.FEATURE_COLUMNS]
 		# self._Graph = utils.make_graph(X, self._density, self._distance, self._kernel_obj, feasibilitySet, epsilon) ## Adjacency matrix representation of graph
 		self._Graph = utils.make_graph_adjList(X, self._density, self._distance, self._kernel_obj, feasibilitySet, epsilon) ## Adjacency matrix representation of graph
+		pk.dump(self._Graph, open("Graph_faceSynthetic.pk", 'wb'))
 
 	def get_candidates(self, tp, td):
 		"""
@@ -118,8 +89,8 @@ class FACE:
 		"""
 		candidates = {}
 		for x_id, x in self._data[self.FEATURE_COLUMNS].iterrows():
-			# print(self._clf.predict_log_proba([x])[0][1])
-			if (self._clf.predict_log_proba([x])[0][1] > np.log(tp) and self._density.pdf(x) > td):
+			# print("pdf", self._density.pdf(x, self._data.iloc[x_id][self.TARGET_COLUMN]))
+			if (self._clf.predict_log_proba([x])[0][1] > np.log(tp)): # and self._density.pdf(x, self._data.iloc[x_id][self.TARGET_COLUMN]) > td):
 				candidates[x_id] = x
 
 		return candidates
@@ -144,7 +115,7 @@ class FACE:
 		min_target = -1
 		min_path = None
 		for candidate_id in I:
-			candidate = I[candidate_id]
+			candidate = I[candidate_id]			
 			closest_target_path, path_cost = self.shortestPath(source, candidate_id)
 			if (path_cost == -1):
 				continue
